@@ -117,184 +117,537 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
-var bundleURL = null;
-
-function getBundleURLCached() {
-  if (!bundleURL) {
-    bundleURL = getBundleURL();
-  }
-
-  return bundleURL;
-}
-
-function getBundleURL() {
-  // Attempt to find the URL of the current script and use that as the base URL
-  try {
-    throw new Error();
-  } catch (err) {
-    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
-
-    if (matches) {
-      return getBaseURL(matches[0]);
-    }
-  }
-
-  return '/';
-}
-
-function getBaseURL(url) {
-  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)?\/[^/]+(?:\?.*)?$/, '$1') + '/';
-}
-
-exports.getBundleURL = getBundleURLCached;
-exports.getBaseURL = getBaseURL;
-},{}],"../node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
-var bundle = require('./bundle-url');
-
-function updateLink(link) {
-  var newLink = link.cloneNode();
-
-  newLink.onload = function () {
-    link.remove();
-  };
-
-  newLink.href = link.href.split('?')[0] + '?' + Date.now();
-  link.parentNode.insertBefore(newLink, link.nextSibling);
-}
-
-var cssTimeout = null;
-
-function reloadCSS() {
-  if (cssTimeout) {
-    return;
-  }
-
-  cssTimeout = setTimeout(function () {
-    var links = document.querySelectorAll('link[rel="stylesheet"]');
-
-    for (var i = 0; i < links.length; i++) {
-      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
-        updateLink(links[i]);
-      }
-    }
-
-    cssTimeout = null;
-  }, 50);
-}
-
-module.exports = reloadCSS;
-},{"./bundle-url":"../node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"scss/main.scss":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"js/main.ts":[function(require,module,exports) {
+})({"js/ToolsUI.ts":[function(require,module,exports) {
 "use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.ToolsUI = void 0; // @ts-ignore
+// @ts-nocheck
 
-require("./../scss/main.scss");
+var ToolsUI = /*#__PURE__*/function () {
+  function ToolsUI(container) {
+    _classCallCheck(this, ToolsUI);
 
-var TOOLS;
+    var root = this.createRoot();
+    this.createButtons(root);
+    this.attachToContainer(container, root); // subscribers - funkcje nasluchujace na zmiane narzedzi (obserwator) / ToolsUi nie ma pojecia kto jest zainteresowany zmiana narzedzi
+    //odseparowanie logiki zwiazanej ze zmiana(budowaniem) narzedzia od logiki zwiazanej z reagowaniem na taka zmiane
 
-(function (TOOLS) {
-  TOOLS["BRUSH"] = "brush";
-  TOOLS["PENCIL"] = "pencil";
-  TOOLS["SHAPE"] = "shape";
-  TOOLS["NONE"] = "none";
-})(TOOLS || (TOOLS = {}));
+    this.subscribers = [];
+  }
 
-var DOM_SELECTORS;
-
-(function (DOM_SELECTORS) {
-  DOM_SELECTORS["JS_TOOL"] = ".js-tool";
-  DOM_SELECTORS["JS_CURRENT_TOOL"] = ".js-current-tool";
-  DOM_SELECTORS["CANVAS"] = "canvas";
-})(DOM_SELECTORS || (DOM_SELECTORS = {}));
-
-var CSS_CLASSES;
-
-(function (CSS_CLASSES) {
-  CSS_CLASSES["ACTIVE"] = "active";
-})(CSS_CLASSES || (CSS_CLASSES = {}));
-
-var HTML_ATTRIBUTES;
-
-(function (HTML_ATTRIBUTES) {
-  HTML_ATTRIBUTES["DATA_COLOR"] = "data-color";
-  HTML_ATTRIBUTES["DATA_TOOL"] = "data-tool";
-})(HTML_ATTRIBUTES || (HTML_ATTRIBUTES = {}));
-
-var current = document.querySelector(DOM_SELECTORS.JS_CURRENT_TOOL);
-var canvas = document.querySelector(DOM_SELECTORS.CANVAS);
-var ctx = canvas === null || canvas === void 0 ? void 0 : canvas.getContext('2d');
-var tool = TOOLS.NONE;
-var drawing = false;
-
-function selectBrush(btn) {
-  var color = btn.getAttribute(HTML_ATTRIBUTES.DATA_COLOR);
-  alert(color);
-}
-
-function removeActive() {
-  document.querySelectorAll(DOM_SELECTORS.JS_TOOL).forEach(function (t) {
-    return t.classList.remove(CSS_CLASSES.ACTIVE);
-  });
-}
-
-function setActive(element) {
-  element.classList.add(CSS_CLASSES.ACTIVE);
-}
-
-document.querySelectorAll(DOM_SELECTORS.JS_TOOL).forEach(function (t) {
-  return t.addEventListener('click', function (ev) {
-    var selectedTool = ev.target;
-    tool = selectedTool === null || selectedTool === void 0 ? void 0 : selectedTool.getAttribute(HTML_ATTRIBUTES.DATA_TOOL);
-    removeActive();
-    setActive(selectedTool);
-
-    if (current) {
-      current.textContent = tool;
+  _createClass(ToolsUI, [{
+    key: "createRoot",
+    value: function createRoot() {
+      var root = document.createElement('div');
+      root.classList.add('flex', 'flex-column');
+      return root;
     }
-  });
+  }, {
+    key: "createButtons",
+    value: function createButtons(root) {
+      //subject - pojedyncze narzedzie na ktorego zmiane nasluchuje
+      root.appendChild(this.createButton('Pencil', 'pencil'));
+      root.appendChild(this.createButton('Brush', 'brush'));
+      root.appendChild(this.createButton('Shape', 'shape'));
+    }
+  }, {
+    key: "attachToContainer",
+    value: function attachToContainer(container, root) {
+      document.querySelector(container).appendChild(root);
+    }
+  }, {
+    key: "createButton",
+    value: function createButton(name, selector) {
+      var _this = this;
+
+      var btn = document.createElement('button');
+      btn.setAttribute('data-tool', selector);
+      btn.textContent = name;
+      btn.addEventListener('click', function () {
+        _this.subscribers.forEach(function (s) {
+          return s(selector);
+        });
+      });
+      return btn;
+    }
+  }, {
+    key: "subscribe",
+    value: function subscribe(subscriber) {
+      this.subscribers.push(subscriber);
+    }
+  }]);
+
+  return ToolsUI;
+}();
+
+exports.ToolsUI = ToolsUI;
+},{}],"js/Tool.ts":[function(require,module,exports) {
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
+exports.Tool = void 0;
 
-if (canvas && ctx) {
-  canvas.addEventListener('mousemove', function (ev) {
-    if (tool === TOOLS.PENCIL && drawing) {
-      ctx.lineWidth = 1;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = 'black';
-      ctx.lineTo(ev.offsetX, ev.offsetY);
-      ctx.stroke();
-    } else if (tool === TOOLS.BRUSH && drawing) {
-      ctx.lineWidth = 5;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = 'red';
-      ctx.lineTo(ev.offsetX, ev.offsetY);
-      ctx.stroke();
-    }
-  });
-  canvas.addEventListener('pointerdown', function (ev) {
-    if (tool === TOOLS.SHAPE) {
-      var size = 20;
-      ctx.strokeStyle = 'green';
-      ctx.strokeRect(ev.offsetX - size / 2, ev.offsetY - size / 2, size, size);
-    } else if ([TOOLS.BRUSH, TOOLS.PENCIL].includes(tool)) {
-      if (!drawing) {
-        drawing = true;
+var Tool = /*#__PURE__*/function () {
+  function Tool() {
+    _classCallCheck(this, Tool);
+
+    this._drawing = false;
+    this._capSize = 1;
+    this._color = 'black';
+    this._size = 10;
+  }
+
+  _createClass(Tool, [{
+    key: "onMouseMove",
+    value: function onMouseMove(x, y, ctx) {}
+  }, {
+    key: "onMouseUp",
+    value: function onMouseUp(x, y, ctx) {}
+  }, {
+    key: "onMouseDown",
+    value: function onMouseDown(x, y, ctx) {}
+  }]);
+
+  return Tool;
+}();
+
+exports.Tool = Tool;
+},{}],"js/Brush.ts":[function(require,module,exports) {
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Brush = void 0;
+
+var Tool_1 = require("./Tool");
+
+var Brush = /*#__PURE__*/function (_Tool_1$Tool) {
+  _inherits(Brush, _Tool_1$Tool);
+
+  var _super = _createSuper(Brush);
+
+  function Brush(capSize, color) {
+    var _this;
+
+    _classCallCheck(this, Brush);
+
+    _this = _super.call(this);
+    _this._drawing = false;
+    _this._capSize = capSize || 5;
+    _this._color = color || 'black';
+    return _this;
+  }
+
+  _createClass(Brush, [{
+    key: "onMouseMove",
+    value: function onMouseMove(x, y, ctx) {
+      if (this._drawing) {
+        ctx.lineWidth = this._capSize;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = this._color;
+        ctx.lineTo(x, y);
+        ctx.stroke();
       }
     }
-  });
-  canvas.addEventListener('pointerup', function () {
-    drawing = false;
-    ctx.beginPath();
-  });
-}
-},{"./../scss/main.scss":"scss/main.scss"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+  }, {
+    key: "onMouseUp",
+    value: function onMouseUp(x, y, ctx) {
+      this._drawing = false;
+      ctx.beginPath();
+    }
+  }, {
+    key: "onMouseDown",
+    value: function onMouseDown(x, y, ctx) {
+      if (!this._drawing) {
+        this._drawing = true;
+      }
+    }
+  }]);
+
+  return Brush;
+}(Tool_1.Tool);
+
+exports.Brush = Brush;
+},{"./Tool":"js/Tool.ts"}],"js/Pencil.ts":[function(require,module,exports) {
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Pencil = void 0; //wzorzec strategia wymaga aby interfejs obiektów(strategii był taki sam)
+
+var Tool_1 = require("./Tool");
+
+var Pencil = /*#__PURE__*/function (_Tool_1$Tool) {
+  _inherits(Pencil, _Tool_1$Tool);
+
+  var _super = _createSuper(Pencil);
+
+  function Pencil(capSize, color) {
+    var _this;
+
+    _classCallCheck(this, Pencil);
+
+    _this = _super.call(this);
+    _this._drawing = false;
+    _this._capSize = capSize || 5;
+    _this._color = color || 'black';
+    return _this;
+  }
+
+  _createClass(Pencil, [{
+    key: "onMouseMove",
+    value: function onMouseMove(x, y, ctx) {
+      if (this._drawing) {
+        ctx.lineWidth = this._capSize;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = this._color;
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      }
+    }
+  }, {
+    key: "onMouseUp",
+    value: function onMouseUp(x, y, ctx) {
+      this._drawing = false;
+      ctx.beginPath();
+    }
+  }, {
+    key: "onMouseDown",
+    value: function onMouseDown(x, y, ctx) {
+      if (!this._drawing) {
+        this._drawing = true;
+      }
+    }
+  }]);
+
+  return Pencil;
+}(Tool_1.Tool);
+
+exports.Pencil = Pencil;
+},{"./Tool":"js/Tool.ts"}],"js/Shape.ts":[function(require,module,exports) {
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Shape = void 0;
+
+var Tool_1 = require("./Tool");
+
+var Shape = /*#__PURE__*/function (_Tool_1$Tool) {
+  _inherits(Shape, _Tool_1$Tool);
+
+  var _super = _createSuper(Shape);
+
+  function Shape(size, color) {
+    var _this;
+
+    _classCallCheck(this, Shape);
+
+    _this = _super.call(this);
+    _this._size = size || 20;
+    _this._color = color || 'red';
+    return _this;
+  }
+
+  _createClass(Shape, [{
+    key: "onMouseDown",
+    value: function onMouseDown(x, y, ctx) {
+      ctx.strokeStyle = this._color;
+      ctx.strokeRect(x - this._size / 2, y - this._size / 2, this._size, this._size);
+    }
+  }]);
+
+  return Shape;
+}(Tool_1.Tool);
+
+exports.Shape = Shape;
+},{"./Tool":"js/Tool.ts"}],"js/ToolsFactory.ts":[function(require,module,exports) {
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.ToolsFactory = void 0;
+
+var Brush_1 = require("./Brush");
+
+var Pencil_1 = require("./Pencil");
+
+var Shape_1 = require("./Shape");
+
+var ToolsFactory = /*#__PURE__*/function () {
+  function ToolsFactory() {
+    _classCallCheck(this, ToolsFactory);
+
+    //bez wchodzenie w szczegoly implementacji latwo jest modyfikowac narzedzia dzieki fabryce
+    //jedno miejsce w ktorym konfigurujemy jak sa tworzone poszczegolne narzedzia - sa tworzone w sposob spojny i mamy nad tym kontrole
+    this.brush = new Brush_1.Brush(10, 'red');
+    this.pencil = new Pencil_1.Pencil(1, 'gray');
+    this.shape = new Shape_1.Shape(20, 'green');
+  }
+
+  _createClass(ToolsFactory, [{
+    key: "getTool",
+    value: function getTool(tool) {
+      switch (tool) {
+        case 'brush':
+          return this.brush;
+
+        case 'pencil':
+          return this.pencil;
+
+        case 'shape':
+          return this.shape;
+      }
+    }
+  }]);
+
+  return ToolsFactory;
+}();
+
+exports.ToolsFactory = ToolsFactory;
+},{"./Brush":"js/Brush.ts","./Pencil":"js/Pencil.ts","./Shape":"js/Shape.ts"}],"js/DrawingBoardUI.ts":[function(require,module,exports) {
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DrawingBoardUI = void 0;
+
+var DrawingBoardUI = /*#__PURE__*/function () {
+  function DrawingBoardUI(container, width, height) {
+    _classCallCheck(this, DrawingBoardUI);
+
+    this.currentTool = null;
+    this.attachCanvas(container, this.createCanvas(width, height));
+  }
+
+  _createClass(DrawingBoardUI, [{
+    key: "createCanvas",
+    value: function createCanvas(width, height) {
+      var _this = this;
+
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext('2d');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.style.border = '1px solid red'; //dzieki wzorcowi strategia musimy tylko sprawdzic czy jakies narzedzie jest ustawione, naszej klasy nie interesuje jakim narzedziem sie poslugujemy, wiemy ze wszystkie
+      // narzedzia beda mialy dane funkcje onMousemove itd bo musza miec taki sam interfejs
+
+      canvas.addEventListener('mousemove', function (ev) {
+        if (_this.currentTool) {
+          _this.currentTool.onMouseMove(ev.offsetX, ev.offsetY, ctx);
+        }
+      });
+      canvas.addEventListener('mousedown', function (ev) {
+        if (_this.currentTool) {
+          _this.currentTool.onMouseDown(ev.offsetX, ev.offsetY, ctx);
+        }
+      });
+      canvas.addEventListener('mouseup', function (ev) {
+        if (_this.currentTool) {
+          _this.currentTool.onMouseUp(ev.offsetX, ev.offsetY, ctx);
+        }
+      });
+      return canvas;
+    }
+  }, {
+    key: "attachCanvas",
+    value: function attachCanvas(container, canvas) {
+      var _a;
+
+      (_a = document.querySelector(container)) === null || _a === void 0 ? void 0 : _a.appendChild(canvas);
+    }
+  }, {
+    key: "changeTool",
+    value: function changeTool(tool) {
+      this.currentTool = tool;
+    }
+  }]);
+
+  return DrawingBoardUI;
+}();
+
+exports.DrawingBoardUI = DrawingBoardUI;
+},{}],"js/DrawingContextUI.ts":[function(require,module,exports) {
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.DrawingContextUI = void 0;
+
+var DrawingContextUI = /*#__PURE__*/function () {
+  function DrawingContextUI(container) {
+    _classCallCheck(this, DrawingContextUI);
+
+    var _a;
+
+    this.context = document.createElement('div');
+    this.context.textContent = '👈 Select a tool first';
+    (_a = document.querySelector(container)) === null || _a === void 0 ? void 0 : _a.appendChild(this.context);
+  }
+
+  _createClass(DrawingContextUI, [{
+    key: "updateContext",
+    value: function updateContext(tool) {
+      this.context.textContent = this.formatText(tool);
+    }
+  }, {
+    key: "formatText",
+    value: function formatText(tool) {
+      switch (tool) {
+        case 'brush':
+          return "Selected tool - Brush \uD83D\uDD8C";
+
+        case 'pencil':
+          return "Selected tool - Pencil \u270F\uFE0F";
+
+        case 'shape':
+          return "Selected tool - Shape \u23F9";
+
+        default:
+          return '';
+      }
+    }
+  }]);
+
+  return DrawingContextUI;
+}();
+
+exports.DrawingContextUI = DrawingContextUI;
+},{}],"js/main.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+}); // @ts-ignore
+// @ts-nocheck
+
+var ToolsUI_1 = require("./ToolsUI");
+
+var ToolsFactory_1 = require("./ToolsFactory");
+
+var DrawingBoardUI_1 = require("./DrawingBoardUI");
+
+var DrawingContextUI_1 = require("./DrawingContextUI");
+
+var factory = new ToolsFactory_1.ToolsFactory();
+var tools = new ToolsUI_1.ToolsUI('.js-tools');
+var board = new DrawingBoardUI_1.DrawingBoardUI('.js-canvas', 600, 300);
+var context = new DrawingContextUI_1.DrawingContextUI('.js-context');
+tools.subscribe(function (selectedTool) {
+  var tool = factory.getTool(selectedTool);
+  board.changeTool(tool);
+});
+tools.subscribe(function (selectedTool) {
+  context.updateContext(selectedTool);
+});
+},{"./ToolsUI":"js/ToolsUI.ts","./ToolsFactory":"js/ToolsFactory.ts","./DrawingBoardUI":"js/DrawingBoardUI.ts","./DrawingContextUI":"js/DrawingContextUI.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -322,7 +675,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62089" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58675" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -12,22 +12,12 @@
     </head>
     <body>
         <h1>Painter</h1>
-        <div class="flex">
-            <div class="flex flex-column">
-                <button class="js-tool" data-tool="pencil">Pencil</button>
-                <button class="js-tool" data-tool="brush">Brush</button>
-                <button class="js-tool" data-tool="shape">Shape</button>
-            </div>
 
+        <div class="flex flex-row flex-jc-center">
+            <div class="js-tools"></div>
             <div class="flex flex-column">
-                <canvas
-                    id="myCanvas"
-                    width="500"
-                    height="300"
-                    style="border: 1px solid #000000"
-                >
-                </canvas>
-                <span class="js-current-tool"></span>
+                <div class="js-canvas"></div>
+                <div class="js-context"></div>
             </div>
         </div>
     </body>
