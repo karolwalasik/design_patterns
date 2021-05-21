@@ -1,0 +1,1 @@
+{"version":3,"sources":["scss/main.scss"],"names":[],"mappings":"AAAA;EACE;;;AAGF;EACE;;;AAGF;EACE;;;AAGF;EACE","file":"main.7ebd0bc5.css","sourceRoot":"../src","sourcesContent":["body{\n  background-color: lightgrey;\n}\n\n.flex{\n  display: flex;\n}\n\n.flex-column{\n  flex-direction: column;\n}\n\n.active{\n  background-color: yellow;\n}"]}

@@ -1,0 +1,17 @@
+body {
+  background-color: lightgrey;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.active {
+  background-color: yellow;
+}
+
+/*# sourceMappingURL=/main.7ebd0bc5.css.map */
