@@ -1,5 +1,39 @@
+$textColor: #A6A297;
+$bgColor: #F2F2F2;
+$mainColor: #A68F1F;
+$secondaryColor: #F2E635;
 body{
-  background-color: lightgrey;
+  background-color: $bgColor;
+  color: $textColor;
+  font-family: 'Padauk', sans-serif;
+}
+
+canvas{
+  border: 1px solid $mainColor;
+  -webkit-box-shadow: 10px 10px 31px 0px rgba(179,179,179,1);
+  -moz-box-shadow: 10px 10px 31px 0px rgba(179,179,179,1);
+  box-shadow: 10px 10px 31px 0px rgba(179,179,179,1);
+}
+
+
+
+.tools-container > button{
+  background-color: $bgColor;
+  border:1px solid $mainColor;
+  border-radius: 6px;
+  height: 30px;
+  min-width: 100px;
+  &:hover{
+    box-shadow: 0px 0px 5px 0px $secondaryColor;
+  }
+  &:not(:last-of-type){
+  margin-bottom: 10px;
+  }
+}
+
+.canvas-wrapper{
+  margin-right: 120px;
+  margin-left:20px
 }
 
 .flex{
@@ -8,6 +42,14 @@ body{
 
 .flex-column{
   flex-direction: column;
+}
+
+.flex-jc-center{
+  justify-content: center;
+}
+
+.text-center{
+  text-align: center;
 }
 
 .active{

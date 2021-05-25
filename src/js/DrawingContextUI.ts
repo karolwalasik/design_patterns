@@ -20,6 +20,8 @@ export class DrawingContextUI {
                 return `Selected tool - Pencil ✏️`
             case 'shape':
                 return `Selected tool - Shape ⏹`
+            case 'eraser':
+                return `Selected tool - Eraser ❌`
             default:
                 return ''
         }

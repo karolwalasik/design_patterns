@@ -1,5 +1,6 @@
 // @ts-ignore
 // @ts-nocheck
+import '../scss/main.scss'
 import { ToolsUI } from './ToolsUI'
 import { ToolsFactory } from './ToolsFactory'
 import { DrawingBoardUI } from './DrawingBoardUI'

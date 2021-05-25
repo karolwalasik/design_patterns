@@ -12,7 +12,6 @@ export class DrawingBoardUI {
         const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
         canvas.width = width
         canvas.height = height
-        canvas.style.border = '1px solid red'
 
         //dzieki wzorcowi strategia musimy tylko sprawdzic czy jakies narzedzie jest ustawione, naszej klasy nie interesuje jakim narzedziem sie poslugujemy, wiemy ze wszystkie
         // narzedzia beda mialy dane funkcje onMousemove itd bo musza miec taki sam interfejs

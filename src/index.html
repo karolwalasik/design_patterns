@@ -8,14 +8,19 @@
         />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <title>Document</title>
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Padauk&display=swap"
+            rel="stylesheet"
+        />
         <script src="js/main.ts" defer></script>
     </head>
     <body>
-        <h1>Painter</h1>
+        <h1 class="text-center">Paint</h1>
 
         <div class="flex flex-row flex-jc-center">
             <div class="js-tools"></div>
-            <div class="flex flex-column">
+            <div class="flex flex-column canvas-wrapper">
                 <div class="js-canvas"></div>
                 <div class="js-context"></div>
             </div>

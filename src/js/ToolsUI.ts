@@ -12,7 +12,7 @@ export class ToolsUI {
 
     createRoot() {
         const root = document.createElement('div')
-        root.classList.add('flex', 'flex-column')
+        root.classList.add('flex', 'flex-column', 'tools-container')
         return root
     }
 
@@ -21,6 +21,7 @@ export class ToolsUI {
         root.appendChild(this.createButton('Pencil', 'pencil'))
         root.appendChild(this.createButton('Brush', 'brush'))
         root.appendChild(this.createButton('Shape', 'shape'))
+        root.appendChild(this.createButton('Eraser', 'eraser'))
     }
 
     attachToContainer(container, root) {

@@ -117,7 +117,79 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"js/ToolsUI.ts":[function(require,module,exports) {
+})({"../node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+var bundleURL = null;
+
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
+  }
+
+  return bundleURL;
+}
+
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+
+    if (matches) {
+      return getBaseURL(matches[0]);
+    }
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)?\/[^/]+(?:\?.*)?$/, '$1') + '/';
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],"../node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
+var bundle = require('./bundle-url');
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+
+  newLink.onload = function () {
+    link.remove();
+  };
+
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+
+var cssTimeout = null;
+
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
+
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
+      }
+    }
+
+    cssTimeout = null;
+  }, 50);
+}
+
+module.exports = reloadCSS;
+},{"./bundle-url":"../node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"scss/main.scss":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"js/ToolsUI.ts":[function(require,module,exports) {
 "use strict";
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -148,7 +220,7 @@ var ToolsUI = /*#__PURE__*/function () {
     key: "createRoot",
     value: function createRoot() {
       var root = document.createElement('div');
-      root.classList.add('flex', 'flex-column');
+      root.classList.add('flex', 'flex-column', 'tools-container');
       return root;
     }
   }, {
@@ -158,6 +230,7 @@ var ToolsUI = /*#__PURE__*/function () {
       root.appendChild(this.createButton('Pencil', 'pencil'));
       root.appendChild(this.createButton('Brush', 'brush'));
       root.appendChild(this.createButton('Shape', 'shape'));
+      root.appendChild(this.createButton('Eraser', 'eraser'));
     }
   }, {
     key: "attachToContainer",
@@ -447,6 +520,79 @@ var Shape = /*#__PURE__*/function (_Tool_1$Tool) {
 }(Tool_1.Tool);
 
 exports.Shape = Shape;
+},{"./Tool":"js/Tool.ts"}],"js/Eraser.ts":[function(require,module,exports) {
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Eraser = void 0;
+
+var Tool_1 = require("./Tool");
+
+var Eraser = /*#__PURE__*/function (_Tool_1$Tool) {
+  _inherits(Eraser, _Tool_1$Tool);
+
+  var _super = _createSuper(Eraser);
+
+  function Eraser(size, color) {
+    var _this;
+
+    _classCallCheck(this, Eraser);
+
+    _this = _super.call(this);
+    _this._drawing = false;
+    _this._size = size || 20;
+    return _this;
+  }
+
+  _createClass(Eraser, [{
+    key: "onMouseMove",
+    value: function onMouseMove(x, y, ctx) {
+      if (this._drawing) {
+        ctx.clearRect(x - this._size / 2, y - this._size / 2, this._size, this._size);
+      }
+    }
+  }, {
+    key: "onMouseUp",
+    value: function onMouseUp(x, y, ctx) {
+      this._drawing = false;
+    }
+  }, {
+    key: "onMouseDown",
+    value: function onMouseDown(x, y, ctx) {
+      if (!this._drawing) {
+        this._drawing = true;
+      }
+    }
+  }]);
+
+  return Eraser;
+}(Tool_1.Tool);
+
+exports.Eraser = Eraser;
 },{"./Tool":"js/Tool.ts"}],"js/ToolsFactory.ts":[function(require,module,exports) {
 "use strict";
 
@@ -467,6 +613,8 @@ var Pencil_1 = require("./Pencil");
 
 var Shape_1 = require("./Shape");
 
+var Eraser_1 = require("./Eraser");
+
 var ToolsFactory = /*#__PURE__*/function () {
   function ToolsFactory() {
     _classCallCheck(this, ToolsFactory);
@@ -476,6 +624,7 @@ var ToolsFactory = /*#__PURE__*/function () {
     this.brush = new Brush_1.Brush(10, 'red');
     this.pencil = new Pencil_1.Pencil(1, 'gray');
     this.shape = new Shape_1.Shape(20, 'green');
+    this.eraser = new Eraser_1.Eraser(10, 'white');
   }
 
   _createClass(ToolsFactory, [{
@@ -490,6 +639,9 @@ var ToolsFactory = /*#__PURE__*/function () {
 
         case 'shape':
           return this.shape;
+
+        case 'eraser':
+          return this.eraser;
       }
     }
   }]);
@@ -498,7 +650,7 @@ var ToolsFactory = /*#__PURE__*/function () {
 }();
 
 exports.ToolsFactory = ToolsFactory;
-},{"./Brush":"js/Brush.ts","./Pencil":"js/Pencil.ts","./Shape":"js/Shape.ts"}],"js/DrawingBoardUI.ts":[function(require,module,exports) {
+},{"./Brush":"js/Brush.ts","./Pencil":"js/Pencil.ts","./Shape":"js/Shape.ts","./Eraser":"js/Eraser.ts"}],"js/DrawingBoardUI.ts":[function(require,module,exports) {
 "use strict";
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -528,8 +680,7 @@ var DrawingBoardUI = /*#__PURE__*/function () {
       var canvas = document.createElement('canvas');
       var ctx = canvas.getContext('2d');
       canvas.width = width;
-      canvas.height = height;
-      canvas.style.border = '1px solid red'; //dzieki wzorcowi strategia musimy tylko sprawdzic czy jakies narzedzie jest ustawione, naszej klasy nie interesuje jakim narzedziem sie poslugujemy, wiemy ze wszystkie
+      canvas.height = height; //dzieki wzorcowi strategia musimy tylko sprawdzic czy jakies narzedzie jest ustawione, naszej klasy nie interesuje jakim narzedziem sie poslugujemy, wiemy ze wszystkie
       // narzedzia beda mialy dane funkcje onMousemove itd bo musza miec taki sam interfejs
 
       canvas.addEventListener('mousemove', function (ev) {
@@ -610,6 +761,9 @@ var DrawingContextUI = /*#__PURE__*/function () {
         case 'shape':
           return "Selected tool - Shape \u23F9";
 
+        case 'eraser':
+          return "Selected tool - Eraser \u274C";
+
         default:
           return '';
       }
@@ -627,6 +781,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 }); // @ts-ignore
 // @ts-nocheck
+
+require("../scss/main.scss");
 
 var ToolsUI_1 = require("./ToolsUI");
 
@@ -647,7 +803,7 @@ tools.subscribe(function (selectedTool) {
 tools.subscribe(function (selectedTool) {
   context.updateContext(selectedTool);
 });
-},{"./ToolsUI":"js/ToolsUI.ts","./ToolsFactory":"js/ToolsFactory.ts","./DrawingBoardUI":"js/DrawingBoardUI.ts","./DrawingContextUI":"js/DrawingContextUI.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"../scss/main.scss":"scss/main.scss","./ToolsUI":"js/ToolsUI.ts","./ToolsFactory":"js/ToolsFactory.ts","./DrawingBoardUI":"js/DrawingBoardUI.ts","./DrawingContextUI":"js/DrawingContextUI.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -675,7 +831,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58675" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49861" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
