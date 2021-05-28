@@ -10,13 +10,13 @@ export class ToolsUI {
         this.subscribers = []
     }
 
-    createRoot() {
+    private createRoot() {
         const root = document.createElement('div')
         root.classList.add('flex', 'flex-column', 'tools-container')
         return root
     }
 
-    createButtons(root) {
+    private createButtons(root) {
         //subject - pojedyncze narzedzie na ktorego zmiane nasluchuje
         root.appendChild(this.createButton('Pencil', 'pencil'))
         root.appendChild(this.createButton('Brush', 'brush'))
@@ -24,11 +24,11 @@ export class ToolsUI {
         root.appendChild(this.createButton('Eraser', 'eraser'))
     }
 
-    attachToContainer(container, root) {
+    private attachToContainer(container, root) {
         document.querySelector(container).appendChild(root)
     }
 
-    createButton(name, selector) {
+    private createButton(name, selector) {
         const btn = document.createElement('button')
         btn.setAttribute('data-tool', selector)
         btn.textContent = name
@@ -38,7 +38,18 @@ export class ToolsUI {
         return btn
     }
 
-    subscribe(subscriber) {
+    public subscribe(subscriber) {
         this.subscribers.push(subscriber)
+    }
+
+    public setActive(selectedTool) {
+        const btns = document.querySelectorAll('button')
+        const tools = [...btns].filter((btn) => !!btn.getAttribute('data-tool'))
+        tools.forEach((toolBtn) => toolBtn.classList.remove('active'))
+        tools.forEach((toolBtn) => {
+            if (toolBtn.getAttribute('data-tool') === selectedTool) {
+                toolBtn.classList.add('active')
+            }
+        })
     }
 }

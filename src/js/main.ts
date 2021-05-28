@@ -19,3 +19,7 @@ tools.subscribe((selectedTool) => {
 tools.subscribe((selectedTool) => {
     context.updateContext(selectedTool)
 })
+
+tools.subscribe((selectedTool) => {
+    tools.setActive(selectedTool)
+})

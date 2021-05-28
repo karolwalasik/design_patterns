@@ -192,6 +192,18 @@ module.hot.accept(reloadCSS);
 },{"_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"js/ToolsUI.ts":[function(require,module,exports) {
 "use strict";
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -256,6 +268,24 @@ var ToolsUI = /*#__PURE__*/function () {
     key: "subscribe",
     value: function subscribe(subscriber) {
       this.subscribers.push(subscriber);
+    }
+  }, {
+    key: "setActive",
+    value: function setActive(selectedTool) {
+      var btns = document.querySelectorAll('button');
+
+      var tools = _toConsumableArray(btns).filter(function (btn) {
+        return !!btn.getAttribute('data-tool');
+      });
+
+      tools.forEach(function (toolBtn) {
+        return toolBtn.classList.remove('active');
+      });
+      tools.forEach(function (toolBtn) {
+        if (toolBtn.getAttribute('data-tool') === selectedTool) {
+          toolBtn.classList.add('active');
+        }
+      });
     }
   }]);
 
@@ -803,6 +833,9 @@ tools.subscribe(function (selectedTool) {
 tools.subscribe(function (selectedTool) {
   context.updateContext(selectedTool);
 });
+tools.subscribe(function (selectedTool) {
+  tools.setActive(selectedTool);
+});
 },{"../scss/main.scss":"scss/main.scss","./ToolsUI":"js/ToolsUI.ts","./ToolsFactory":"js/ToolsFactory.ts","./DrawingBoardUI":"js/DrawingBoardUI.ts","./DrawingContextUI":"js/DrawingContextUI.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -831,7 +864,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49861" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59922" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

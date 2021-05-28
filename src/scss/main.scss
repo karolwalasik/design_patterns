@@ -1,15 +1,17 @@
-$textColor: #A6A297;
-$bgColor: #F2F2F2;
-$mainColor: #A68F1F;
-$secondaryColor: #F2E635;
+$textColor: #00758a;
+$bgColor: #e1f4fd;
+$mainColor: #000000;
+$secondaryColor: #d6f3fa;
 body{
   background-color: $bgColor;
   color: $textColor;
   font-family: 'Padauk', sans-serif;
+  margin:0;
 }
 
 canvas{
   border: 1px solid $mainColor;
+  border-radius: 10px;
   -webkit-box-shadow: 10px 10px 31px 0px rgba(179,179,179,1);
   -moz-box-shadow: 10px 10px 31px 0px rgba(179,179,179,1);
   box-shadow: 10px 10px 31px 0px rgba(179,179,179,1);
@@ -18,22 +20,28 @@ canvas{
 
 
 .tools-container > button{
-  background-color: $bgColor;
-  border:1px solid $mainColor;
-  border-radius: 6px;
+  border:unset;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #c1dbe1, #e5ffff);
+  box-shadow:  11px 11px 22px #c3dde4,
+  -11px -11px 22px #e9ffff;
   height: 30px;
   min-width: 100px;
+  color: $textColor;
   &:hover{
-    box-shadow: 0px 0px 5px 0px $secondaryColor;
+    color:black
   }
   &:not(:last-of-type){
   margin-bottom: 10px;
+  }
+  &.active{
+    color: #000000;
   }
 }
 
 .canvas-wrapper{
   margin-right: 120px;
-  margin-left:20px
+  margin-left:20px;
 }
 
 .flex{
@@ -52,6 +60,4 @@ canvas{
   text-align: center;
 }
 
-.active{
-  background-color: yellow;
-}
+
